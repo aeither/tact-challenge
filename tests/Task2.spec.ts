@@ -3,15 +3,15 @@ import { Address, toNano } from 'ton-core';
 import { Task2 } from '../wrappers/Task2';
 import '@ton-community/test-utils';
 
+const admin = Address.parse('0QB9GQZNO-Ge9Hys8KXFGXsaq2EHmrmVsEHciFKDU5W2RG9c');
+
 describe('Task2', () => {
     let blockchain: Blockchain;
     let task2: SandboxContract<Task2>;
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-        task2 = blockchain.openContract(
-            await Task2.fromInit(Address.parse('0QB9GQZNO-Ge9Hys8KXFGXsaq2EHmrmVsEHciFKDU5W2RG9c'))
-        );
+        task2 = blockchain.openContract(await Task2.fromInit(admin));
         const deployer = await blockchain.treasury('deployer');
         const deployResult = await task2.send(
             deployer.getSender(),

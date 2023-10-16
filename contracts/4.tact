@@ -59,12 +59,12 @@ contract Task4 with Deployable {
   receive(msg: NftWithdrawal) {
   }
 
-  get fun time(): Int {
-  }
+  // get fun time(): Int {
+  // }
 
-  get fun nft(): Address? {
-  }
+  // get fun nft(): Address? {
+  // }
 
-  get fun owner(): Address? {
-  }
+  // get fun owner(): Address? {
+  // }
 }

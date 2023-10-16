@@ -69,9 +69,9 @@ contract Task3 with Deployable {
   receive(msg: TokenNotification) {
   } 
   
-  get fun price(jetton: Address): Int { 
-  }
+  // get fun price(jetton: Address): Int { 
+  // }
   
-  get fun balance(jetton: Address): Int { 
-  }
+  // get fun balance(jetton: Address): Int { 
+  // }
 }

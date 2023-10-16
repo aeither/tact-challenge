@@ -50,7 +50,7 @@ contract Task2 with Deployable {
                 bounce: true,
                 value: context().value,
                 mode: SendRemainingValue + SendIgnoreErrors,
-                body: beginCell().storeAddress(context().sender).storeRef(msg.asCell()).endCell()
+                body: beginCell().storeAddress(context().sender).storeSlice(msg).endCell()
             }
         );
 

@@ -26,6 +26,7 @@ contract Task2 with Deployable {
 
     receive(msg: Refund){
         require(sender() == self.admin, "refund message came from the admin address");
+        send(beginCell().storeInt(78, 16).endCell().asSlice());
         send(SendParameters{to: msg.sender,
                 bounce: true,
                 value: 0,

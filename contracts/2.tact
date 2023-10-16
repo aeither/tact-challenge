@@ -46,9 +46,12 @@ contract Task2 with Deployable {
     }
 
     receive(msg: Slice){
+      let amount: Int = min(context().value, myBalance() - context().value - ton("0.01"));
+        require(amount > 0, "Insufficient balance");
+        
         send(SendParameters{to: self.admin,
                 bounce: true,
-                value: context().value,
+                value:  amount,
                 mode: SendRemainingValue + SendIgnoreErrors,
                 body: beginCell().storeAddress(context().sender).storeSlice(msg).endCell()
             }

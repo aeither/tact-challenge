@@ -47,7 +47,8 @@ describe('Task2', () => {
             to: task2.address,
             success: true,
             op: 0x44,
-            // body: beginCell()
+            value: toNano('0.05'),
+            // body: beginCell().endCell(),
         });
     });
 

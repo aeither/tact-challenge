@@ -36,11 +36,11 @@ contract Task2 with Deployable {
     receive(msg: Refund){
         require(sender() == self.admin, "refund message came from the admin address");
 
-        send(SendParameters{to: sender(),
+        send(SendParameters{to: msg.sender,
                 bounce: true,
                 value: context().value,
                 mode: SendRemainingValue + SendIgnoreErrors,
-                body: ProxyMessage{message: msg, sender: sender()}.toCell()
+                body: ProxyMessage{message: msg, sender: msg.sender}.toCell()
             }
         );
     }
@@ -54,5 +54,7 @@ contract Task2 with Deployable {
                 body: ProxyMessage2{message: msg, sender: sender()}.toCell()
             }
         );
+
+        self.reply("msg back with surplus gas fee nanos".asComment());
     }
 }

@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Address, toNano } from 'ton-core';
+import { Address, beginCell, toNano } from 'ton-core';
 import { Task2 } from '../wrappers/Task2';
 import '@ton-community/test-utils';
 
@@ -46,7 +46,8 @@ describe('Task2', () => {
             from: deployer.address,
             to: task2.address,
             success: true,
-            op: 0x44
+            op: 0x44,
+            // body: beginCell()
         });
     });
 

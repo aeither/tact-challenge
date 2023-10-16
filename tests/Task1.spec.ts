@@ -33,7 +33,7 @@ describe('Task1', () => {
         const deployer = await blockchain.treasury('deployer');
         await task1.send(
             deployer.getSender(),
-            { value: toNano(0) },
+            { value: toNano('0.05') },
             { $$type: 'Add', queryId: BigInt(1), number: BigInt(123) }
         );
         const count = await task1.getCounter();

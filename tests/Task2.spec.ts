@@ -39,7 +39,7 @@ describe('Task2', () => {
         const sendResult = await task2.send(
             deployer.getSender(),
             { value: toNano('0.05') },
-            { $$type: 'Refund', queryId: BigInt(1), sender: vaniton }
+            { $$type: 'Refund', queryId: BigInt(0), sender: vaniton }
         );
 
         expect(sendResult.transactions).toHaveTransaction({
@@ -52,15 +52,61 @@ describe('Task2', () => {
         });
     });
 
-    it('test2', async () => {
-        const deployer = await blockchain.treasury('deployer');
+    it('test refund', async () => {
+        const deployer = await blockchain.treasury('deployer'); // x8G
+        const user = await blockchain.treasury('user'); // Snt
 
-        await task2.send(
+        const result = await task2.send(
             deployer.getSender(),
             { value: toNano('0.05') },
-            { $$type: 'Refund', queryId: BigInt(1), sender: admin }
+            { $$type: 'Refund', queryId: BigInt(1), sender: user.address }
         );
+        expect(result.transactions).toHaveTransaction({
+            from: task2.address,
+            to: user.address,
+            body: beginCell().storeAddress(user.address).endCell(),
+            // value: toNano('0.05'),
+        });
     });
+
+    it('test3', async () => {
+        const deployer = await blockchain.treasury('deployer');
+        const user = await blockchain.treasury('user');
+
+        const result = await task2.send(
+            user.getSender(),
+            { value: toNano('0.05') },
+            beginCell().storeInt(78, 16).endCell().asSlice()
+        );
+        expect(result.transactions).toHaveTransaction({
+            from: task2.address,
+            to: deployer.address,
+            body: beginCell()
+                .storeAddress(user.address)
+                .storeRef(beginCell().storeSlice(beginCell().storeInt(78, 16).endCell().asSlice()).endCell())
+                .endCell(),
+            // value: toNano('0.05'),
+        });
+    });
+
+    // it('should forward from another wallet', async () => {
+    //     const deployer = await blockchain.treasury('deployer');
+    //     let user = await blockchain.treasury('user');
+    // const result = await user.send({
+    //     to: task2.address,
+    //     value: toNano('1'),
+    //     body: beginCell().storeAddress(context().sender).storeRef(beginCell().storeSlice(msg).endCell()).endCell(),
+    // });
+    // expect(result.transactions).toHaveTransaction({
+    //     from: task2.address,
+    //     to: deployer.address,
+    //     body: beginCell()
+    //         .storeAddress(user.address)
+    //         .storeRef(beginCell().storeStringTail('Hello, world!').endCell())
+    //         .endCell(),
+    //     value: (x) => (x ? toNano('0.99') <= x && x <= toNano('1') : false),
+    // });
+    // });
 });
 
 /*

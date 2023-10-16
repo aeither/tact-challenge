@@ -1,5 +1,4 @@
 import "@stdlib/deploy";
-
 /*
   TASK 2 - Proxy 
   Create a contract that forwards all received TONs
@@ -18,6 +17,11 @@ message(0x44) Refund {
     sender: Address;
 }
 
+message(0x46) ProxyMessage {
+    message: String;
+    sender: Address;
+}
+
 contract Task2 with Deployable {
     admin: Address;
     init(admin: Address){
@@ -25,11 +29,14 @@ contract Task2 with Deployable {
     }
 
     receive(msg: Refund){
-        require(context().value > 0, "Insufficient balance");
-        send(SendParameters{to: self.admin,
+        // require(context().value > 0, "Insufficient balance");
+        require(sender() == self.admin, "refund message came from the admin address");
+
+        send(SendParameters{to: sender(),
                 bounce: true,
                 value: context().value,
-                mode: SendRemainingValue + SendIgnoreErrors
+                mode: SendRemainingValue + SendIgnoreErrors,
+                body: ProxyMessage{message: "message", sender: sender()}.toCell()
             }
         );
     }
@@ -39,7 +46,8 @@ contract Task2 with Deployable {
         send(SendParameters{to: self.admin,
                 bounce: true,
                 value: context().value,
-                mode: SendRemainingValue + SendIgnoreErrors
+                mode: SendRemainingValue + SendIgnoreErrors,
+                body: ProxyMessage{message: "message", sender: sender()}.toCell()
             }
         );
     }

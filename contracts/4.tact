@@ -1,4 +1,3 @@
-import "@stdlib/ownable";
 import "@stdlib/deploy";
 /*
   TASK 4 - NFT locker
@@ -44,20 +43,26 @@ message NftWithdrawal {
     nftAddress: Address;
 }
 
-contract Task4 with Deployable, Ownable {
+contract Task4 with Deployable {
     seed: Int as uint128;
     lockTime: Int as uint32;
-    owner: Address;
+    prevOwner: Address;
     init(seed: Int){
-        self.owner = sender();
+        self.prevOwner = sender();
         self.lockTime = 0;
         self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
     }
 
-    receive(msg: OwnershipAssigned){}
+    receive(msg: OwnershipAssigned){
+        // if already locked a NFT return the attached NFT
+        // else i would receive a NFT, start lock with received time(forwardPayload message as uint32) and assign to prevOwner
+    }
 
     receive(msg: NftWithdrawal){
-        self.requireOwner();
+        // throw sender != prevOwner
+        // if still under locked time send back a comment "NFT is still locked"
+        // else Send all TON and nft to owner
+        return ;
     }
 
     get fun time(): Int {
@@ -67,6 +72,7 @@ contract Task4 with Deployable, Ownable {
     // get fun nft(): Address? {
     // }
 
-    // get fun owner(): Address? {
-    // }
+    get fun owner(): Address? {
+        return self.prevOwner;
+    }
 }

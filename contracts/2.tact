@@ -40,7 +40,7 @@ contract Task2 with Deployable {
                 bounce: true,
                 value: context().value,
                 mode: SendRemainingValue + SendIgnoreErrors,
-                body: ProxyMessage{message: msg, sender: msg.sender}.toCell()
+                body: beginCell().storeAddress(msg.sender).storeUint(msg.queryId, 64).endCell()
             }
         );
     }
@@ -51,7 +51,7 @@ contract Task2 with Deployable {
                 bounce: true,
                 value: context().value,
                 mode: SendRemainingValue + SendIgnoreErrors,
-                body: ProxyMessage2{message: msg, sender: sender()}.toCell()
+                body: beginCell().storeAddress(context().sender).storeRef(msg.asCell()).endCell()
             }
         );
 

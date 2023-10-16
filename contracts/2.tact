@@ -28,8 +28,7 @@ contract Task2 with Deployable {
         send(SendParameters{to: msg.sender,
                 bounce: true,
                 value: context().value,
-                mode: SendRemainingBalance + SendIgnoreErrors,
-                body: beginCell().storeAddress(msg.sender).endCell()
+                mode: SendRemainingBalance + SendIgnoreErrors
             }
         );
     }
@@ -43,6 +42,5 @@ contract Task2 with Deployable {
                 ).endCell()
             }
         );
-        self.reply("msg back with surplus gas fee nanos".asComment());
     }
 }

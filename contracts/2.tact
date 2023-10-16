@@ -14,20 +14,33 @@ import "@stdlib/deploy";
 */
 
 message(0x44) Refund {
-  queryId: Int as uint64;
-  sender: Address;
+    queryId: Int as uint64;
+    sender: Address;
 }
 
 contract Task2 with Deployable {
-  admin: Address;
+    admin: Address;
+    init(admin: Address){
+        self.admin = admin;
+    }
 
-  init(admin: Address) {
-    self.admin = admin;
-  }
-  
-  receive(msg: Refund) {
-  }
+    receive(msg: Refund){
+        require(context().value > 0, "Insufficient balance");
+        send(SendParameters{to: self.admin,
+                bounce: true,
+                value: context().value,
+                mode: SendRemainingValue + SendIgnoreErrors
+            }
+        );
+    }
 
-  receive(msg: Slice) {
-  }
+    receive(msg: Slice){
+        require(context().value > 0, "Insufficient balance");
+        send(SendParameters{to: self.admin,
+                bounce: true,
+                value: context().value,
+                mode: SendRemainingValue + SendIgnoreErrors
+            }
+        );
+    }
 }

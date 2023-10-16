@@ -30,5 +30,7 @@ describe('Task1', () => {
     });
 
     it('test', async () => {
+        const count = await task1.getCounter();
+        console.log(count);
     });
 });

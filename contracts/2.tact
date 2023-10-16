@@ -17,8 +17,13 @@ message(0x44) Refund {
     sender: Address;
 }
 
-message(0x46) ProxyMessage {
-    message: String;
+message ProxyMessage {
+    message: Refund;
+    sender: Address;
+}
+
+message ProxyMessage2 {
+    message: Slice;
     sender: Address;
 }
 
@@ -29,14 +34,13 @@ contract Task2 with Deployable {
     }
 
     receive(msg: Refund){
-        // require(context().value > 0, "Insufficient balance");
         require(sender() == self.admin, "refund message came from the admin address");
 
         send(SendParameters{to: sender(),
                 bounce: true,
                 value: context().value,
                 mode: SendRemainingValue + SendIgnoreErrors,
-                body: ProxyMessage{message: "message", sender: sender()}.toCell()
+                body: ProxyMessage{message: msg, sender: sender()}.toCell()
             }
         );
     }
@@ -47,7 +51,7 @@ contract Task2 with Deployable {
                 bounce: true,
                 value: context().value,
                 mode: SendRemainingValue + SendIgnoreErrors,
-                body: ProxyMessage{message: "message", sender: sender()}.toCell()
+                body: ProxyMessage2{message: msg, sender: sender()}.toCell()
             }
         );
     }

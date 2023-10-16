@@ -3,9 +3,9 @@ import { Address, toNano } from 'ton-core';
 import { Task3 } from '../wrappers/Task3';
 import '@ton-community/test-utils';
 
-const admin = Address.parse('0QB9GQZNO-Ge9Hys8KXFGXsaq2EHmrmVsEHciFKDU5W2RG9c');
-const newJettonAddressA = Address.parse('0QB9GQZNO-Ge9Hys8KXFGXsaq2EHmrmVsEHciFKDU5W2RG9c');
-const newJettonAddressB = Address.parse('0QB9GQZNO-Ge9Hys8KXFGXsaq2EHmrmVsEHciFKDU5W2RG9c');
+const admin = Address.parse('EQBGhqLAZseEqRXz4ByFPTGV7SVMlI4hrbs-Sps_Xzx01x8G');
+const newJettonAddressA = Address.parse('EQBGhqLAZseEqRXz4ByFPTGV7SVMlI4hrbs-Sps_Xzx01x8G');
+const newJettonAddressB = Address.parse('EQBGhqLAZseEqRXz4ByFPTGV7SVMlI4hrbs-Sps_Xzx01x8G');
 
 describe('Task3', () => {
     let blockchain: Blockchain;

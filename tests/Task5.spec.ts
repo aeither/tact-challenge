@@ -4,7 +4,7 @@ import { Task5 } from '../wrappers/Task5';
 import '@ton-community/test-utils';
 
 const salt = BigInt('0');
-const owner = Address.parse('0QB9GQZNO-Ge9Hys8KXFGXsaq2EHmrmVsEHciFKDU5W2RG9c');
+const owner = Address.parse('EQBGhqLAZseEqRXz4ByFPTGV7SVMlI4hrbs-Sps_Xzx01x8G');
 
 describe('Task5', () => {
     let blockchain: Blockchain;

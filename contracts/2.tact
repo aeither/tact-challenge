@@ -1,4 +1,5 @@
 import "@stdlib/deploy";
+
 /*
   TASK 2 - Proxy 
   Create a contract that forwards all received TONs
@@ -17,16 +18,6 @@ message(0x44) Refund {
     sender: Address;
 }
 
-message ProxyMessage {
-    message: Refund;
-    sender: Address;
-}
-
-message ProxyMessage2 {
-    message: Slice;
-    sender: Address;
-}
-
 contract Task2 with Deployable {
     admin: Address;
     init(admin: Address){
@@ -35,28 +26,26 @@ contract Task2 with Deployable {
 
     receive(msg: Refund){
         require(sender() == self.admin, "refund message came from the admin address");
-
         send(SendParameters{to: msg.sender,
                 bounce: true,
-            value: 0,
-            mode: SendRemainingBalance + SendIgnoreErrors,
+                value: 0,
+                mode: SendRemainingBalance + SendIgnoreErrors,
                 body: beginCell().storeAddress(msg.sender).storeUint(msg.queryId, 64).endCell()
             }
         );
     }
 
     receive(msg: Slice){
-      let amount: Int = min(context().value, myBalance() - context().value - ton("0.01"));
+        let amount: Int = min(context().value, myBalance() - context().value - ton("0.01"));
         require(amount > 0, "Insufficient balance");
-        
         send(SendParameters{to: self.admin,
                 bounce: true,
-            value: 0,
-            mode: SendRemainingBalance + SendIgnoreErrors,
-                body: beginCell().storeAddress(context().sender).storeSlice(msg).endCell()
+                value: 0,
+                mode: SendRemainingBalance + SendIgnoreErrors,
+                body: beginCell().storeAddress(context().sender).storeRef(beginCell().storeSlice(msg).endCell()
+                ).endCell()
             }
         );
-
         self.reply("msg back with surplus gas fee nanos".asComment());
     }
 }

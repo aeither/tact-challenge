@@ -1,3 +1,4 @@
+import "@stdlib/ownable";
 import "@stdlib/deploy";
 
 /*
@@ -46,10 +47,12 @@ message NftWithdrawal {
   nftAddress: Address;
 }
 
-contract Task4 with Deployable {
+contract Task4 with Deployable, Ownable {
   seed: Int as uint128;
-  
+  owner: Address;
+
   init(seed: Int) {
+    self.owner = sender();
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
   }
 
@@ -57,6 +60,7 @@ contract Task4 with Deployable {
   }
 
   receive(msg: NftWithdrawal) {
+     self.requireOwner();
   }
 
   // get fun time(): Int {

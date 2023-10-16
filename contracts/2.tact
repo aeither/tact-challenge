@@ -46,7 +46,6 @@ contract Task2 with Deployable {
     }
 
     receive(msg: Slice){
-        require(context().value > 0, "Insufficient balance");
         send(SendParameters{to: self.admin,
                 bounce: true,
                 value: context().value,

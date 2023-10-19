@@ -64,9 +64,48 @@ contract Task3 with Deployable {
         self.decimal = 1000000000;
     }
 
-    receive(msg: TokenNotification){}
+    receive(msg: TokenNotification){
+        if (self.owner == context().sender) {
+            // If admin. add balance
+            if (true) {
+                self.bAmount = msg.amount;
+            } else {
+                self.aAmount = msg.amount;
+            }
+        } else {
+            // Swap
+            let amountOfJettonAOnContract: Int = self.aAmount;
+            let amountOfJettonBOnContract: Int = self.bAmount;
+            let decimal: Int = self.decimal;
+            let amountOfTokenBToSwap: Int = msg.amount;
+            let toBeExchanged: Int =
+                amountOfJettonAOnContract * decimal / amountOfJettonBOnContract * amountOfTokenBToSwap / decimal;
+        }
+    }
 
-    get fun price(jetton: Address): Int {}
+    get fun price(jetton: Address): Int {
+        if (jetton == self.jettonAddressA) {
+            let amountOfJettonAOnContract: Int = self.aAmount;
+            let amountOfJettonBOnContract: Int = self.bAmount;
+            let decimal: Int = self.decimal;
+            let nanoAmount: Int = amountOfJettonAOnContract * decimal / amountOfJettonBOnContract;
+            return nanoAmount / decimal;
+        } else {
+            let amountOfJettonAOnContract: Int = self.aAmount;
+            let amountOfJettonBOnContract: Int = self.bAmount;
+            let decimal: Int = self.decimal;
+            let nanoAmount: Int = amountOfJettonBOnContract * decimal / amountOfJettonAOnContract;
+            return nanoAmount / decimal;
+        }
+    }
 
-    get fun balance(jetton: Address): Int {}
+    get fun balance(jetton: Address): Int {
+        if (jetton == self.jettonAddressA) {
+            return self.aAmount;
+        }
+        if (jetton == self.jettonAddressB) {
+            return self.bAmount;
+        }
+        return 0;
+    }
 }

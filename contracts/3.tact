@@ -1,4 +1,5 @@
 import "@stdlib/deploy";
+
 /*
   TASK 3 - DEX
   Create a simple jetton dex contract that trades one pair of jettons: A and B.
@@ -67,19 +68,63 @@ contract Task3 with Deployable {
     receive(msg: TokenNotification){
         if (self.owner == context().sender) {
             // If admin. add balance
-            if (true) {
-                self.bAmount = msg.amount;
+            if (msg.from == self.jettonAddressA) {
+                // If address = token A
+                self.aAmount = self.aAmount + msg.amount;
             } else {
-                self.aAmount = msg.amount;
+                self.bAmount = self.bAmount + msg.amount;
             }
         } else {
             // Swap
             let amountOfJettonAOnContract: Int = self.aAmount;
             let amountOfJettonBOnContract: Int = self.bAmount;
             let decimal: Int = self.decimal;
-            let amountOfTokenBToSwap: Int = msg.amount;
-            let toBeExchanged: Int =
-                amountOfJettonAOnContract * decimal / amountOfJettonBOnContract * amountOfTokenBToSwap / decimal;
+            if (msg.from == self.jettonAddressA) {
+                // A->B swap
+                // TODO: require msg.amount lower than self.aAmount or bAmount
+                let amountOfTokenAToSwap: Int = msg.amount;
+                let amountToBeSend: Int =
+                    amountOfJettonBOnContract * decimal / amountOfJettonAOnContract * amountOfTokenAToSwap / decimal;
+                send(SendParameters{value: ton("0.1"),
+                        to: self.jettonAddressB,
+                        mode: 0,
+                        body: TokenTransfer{queryId: 0,
+                            amount: amountToBeSend,
+                            destination: context().sender,
+                            responseDestination: myAddress(),
+                            customPayload: null,
+                            forwardTonAmount: ton("0.01"), // forward for notification
+                            forwardPayload: emptySlice()
+                        }.toCell(),
+                        bounce: false
+                    }
+                );
+                // Update Balance
+                self.aAmount = self.aAmount + amountOfTokenAToSwap;
+                self.bAmount = self.bAmount - amountToBeSend;
+            } else {
+                // B->A swap
+                let amountOfTokenBToSwap: Int = msg.amount;
+                let amountToBeSend: Int =
+                    amountOfJettonAOnContract * decimal / amountOfJettonBOnContract * amountOfTokenBToSwap / decimal;
+                send(SendParameters{value: ton("0.1"),
+                        to: self.jettonAddressA,
+                        mode: 0,
+                        body: TokenTransfer{queryId: 0,
+                            amount: amountToBeSend,
+                            destination: context().sender,
+                            responseDestination: myAddress(),
+                            customPayload: null,
+                            forwardTonAmount: ton("0.01"), // forward for notification
+                            forwardPayload: emptySlice()
+                        }.toCell(),
+                        bounce: false
+                    }
+                );
+                // Update Balance
+                self.aAmount = 0;
+                self.bAmount = 0;
+            }
         }
     }
 

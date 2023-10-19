@@ -81,49 +81,91 @@ contract Task3 with Deployable {
             let decimal: Int = self.decimal;
             if (msg.from == self.jettonAddressA) {
                 // A->B swap
-                // TODO: require msg.amount lower than self.aAmount or bAmount
                 let amountOfTokenAToSwap: Int = msg.amount;
-                let amountToBeSend: Int =
-                    amountOfJettonBOnContract * decimal / amountOfJettonAOnContract * amountOfTokenAToSwap / decimal;
-                send(SendParameters{value: ton("0.1"),
-                        to: self.jettonAddressB,
-                        mode: 0,
-                        body: TokenTransfer{queryId: 0,
-                            amount: amountToBeSend,
-                            destination: context().sender,
-                            responseDestination: myAddress(),
-                            customPayload: null,
-                            forwardTonAmount: ton("0.01"), // forward for notification
-                            forwardPayload: emptySlice()
-                        }.toCell(),
-                        bounce: false
-                    }
-                );
-                // Update Balance
-                self.aAmount = self.aAmount + amountOfTokenAToSwap;
-                self.bAmount = self.bAmount - amountToBeSend;
+                // If amount too high, send tokens back to the sender
+                if (amountOfTokenAToSwap > self.aAmount) {
+                    send(SendParameters{value: ton("0.1"),
+                            to: self.jettonAddressA,
+                            mode: 0,
+                            body: TokenTransfer{queryId: 0,
+                                amount: msg.amount,
+                                destination: context().sender,
+                                responseDestination: myAddress(),
+                                customPayload: null,
+                                forwardTonAmount: ton("0.01"), // forward for notification
+                                forwardPayload: emptySlice()
+                            }.toCell(),
+                            bounce: false
+                        }
+                    );
+                } else {
+                    let amountToBeSend: Int =
+                        amountOfJettonBOnContract *
+                            decimal /
+                            amountOfJettonAOnContract *
+                            amountOfTokenAToSwap /
+                            decimal;
+                    send(SendParameters{value: ton("0.1"),
+                            to: self.jettonAddressB,
+                            mode: 0,
+                            body: TokenTransfer{queryId: 0,
+                                amount: amountToBeSend,
+                                destination: context().sender,
+                                responseDestination: myAddress(),
+                                customPayload: null,
+                                forwardTonAmount: ton("0.01"), // forward for notification
+                                forwardPayload: emptySlice()
+                            }.toCell(),
+                            bounce: false
+                        }
+                    );
+                    // Update Balance
+                    self.aAmount = self.aAmount + amountOfTokenAToSwap;
+                    self.bAmount = self.bAmount - amountToBeSend;
+                }
             } else {
                 // B->A swap
                 let amountOfTokenBToSwap: Int = msg.amount;
-                let amountToBeSend: Int =
-                    amountOfJettonAOnContract * decimal / amountOfJettonBOnContract * amountOfTokenBToSwap / decimal;
-                send(SendParameters{value: ton("0.1"),
-                        to: self.jettonAddressA,
-                        mode: 0,
-                        body: TokenTransfer{queryId: 0,
-                            amount: amountToBeSend,
-                            destination: context().sender,
-                            responseDestination: myAddress(),
-                            customPayload: null,
-                            forwardTonAmount: ton("0.01"), // forward for notification
-                            forwardPayload: emptySlice()
-                        }.toCell(),
-                        bounce: false
-                    }
-                );
-                // Update Balance
-                self.aAmount = 0;
-                self.bAmount = 0;
+                if (amountOfTokenBToSwap > self.aAmount) {
+                    send(SendParameters{value: ton("0.1"),
+                            to: self.jettonAddressB,
+                            mode: 0,
+                            body: TokenTransfer{queryId: 0,
+                                amount: msg.amount,
+                                destination: context().sender,
+                                responseDestination: myAddress(),
+                                customPayload: null,
+                                forwardTonAmount: ton("0.01"), // forward for notification
+                                forwardPayload: emptySlice()
+                            }.toCell(),
+                            bounce: false
+                        }
+                    );
+                } else {
+                    let amountToBeSend: Int =
+                        amountOfJettonAOnContract *
+                            decimal /
+                            amountOfJettonBOnContract *
+                            amountOfTokenBToSwap /
+                            decimal;
+                    send(SendParameters{value: ton("0.1"),
+                            to: self.jettonAddressA,
+                            mode: 0,
+                            body: TokenTransfer{queryId: 0,
+                                amount: amountToBeSend,
+                                destination: context().sender,
+                                responseDestination: myAddress(),
+                                customPayload: null,
+                                forwardTonAmount: ton("0.01"), // forward for notification
+                                forwardPayload: emptySlice()
+                            }.toCell(),
+                            bounce: false
+                        }
+                    );
+                    // Update Balance
+                    self.aAmount = self.aAmount + amountOfTokenBToSwap;
+                    self.bAmount = self.bAmount - amountToBeSend;
+                }
             }
         }
     }
